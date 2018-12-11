@@ -49,5 +49,10 @@
 			<version>3.17</version>
 		</dependency>
 
+		<dependency>
+			<groupId>jports</groupId>
+			<artifactId>jports</artifactId>
+			<version>3.0</version>
+		</dependency>
 	</dependencies>
 </project>
