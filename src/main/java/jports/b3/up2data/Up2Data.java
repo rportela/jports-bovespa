@@ -160,4 +160,31 @@ public class Up2Data<T> {
 				: parseFile(latestFile);
 
 	}
+
+	public List<File> getAllFiles() {
+		ArrayList<File> files = new ArrayList<>(1000);
+		Path filePath = aspect.getSubChannel().isEmpty()
+				? Paths.get(
+						up2dataRoot,
+						aspect.getChannel())
+				: Paths.get(
+						up2dataRoot,
+						aspect.getChannel(),
+						aspect.getSubChannel());
+
+		File[] dateDirs = filePath.toFile().listFiles();
+		for (int i = 0; i < dateDirs.length; i++) {
+			File[] children = dateDirs[i].listFiles(new FilenameFilter() {
+				private final String name_prefix = aspect.getFilePrefix();
+
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.startsWith(name_prefix);
+				}
+			});
+			for (int j = 0; j < children.length; j++)
+				files.add(children[j]);
+		}
+		return files;
+	}
 }
