@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * UP2DATA – PortfolioComposition
  * 
- * Portfolio composition of B3's indexes
+ * Portfolio composition of B3's indexes (E.g. Ibovespa, SMLL, UTIL, etc)
  * 
  * @author Giovanna Marinelli
  *
