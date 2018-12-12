@@ -9,8 +9,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Up2DataColumn {
 
+	/**
+	 * The name of the column as it appears on the CSV file;
+	 * 
+	 * @return
+	 */
 	public String name();
 
+	/**
+	 * A format pattern to be used on dates and/or decimal parsing;
+	 * 
+	 * @return
+	 */
 	public String format() default "";
 
 }

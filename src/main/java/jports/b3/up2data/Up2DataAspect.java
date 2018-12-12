@@ -17,6 +17,10 @@ public class Up2DataAspect<T> extends DataAspect<T, Up2DataAspectMember<T>> {
 
 	public Up2DataAspect(Class<T> dataType) {
 		super(dataType);
+	}
+
+	@Override
+	protected void intializeDataType(Class<T> dataType) {
 		this.table = dataType.getAnnotation(Up2DataTable.class);
 		if (table == null) {
 			throw new RuntimeException("Please annotate " + dataType + " with @Up2DataTable;");

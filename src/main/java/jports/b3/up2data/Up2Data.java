@@ -29,6 +29,8 @@ public class Up2Data<T> {
 	private final String up2dataRoot;
 	private final Up2DataAspect<T> aspect;
 	private final String separator;
+	private final String dateFormat;
+	private final Charset charset;
 
 	/**
 	 * Creates a new Up2Data extractor;
@@ -40,6 +42,8 @@ public class Up2Data<T> {
 		this.up2dataRoot = up2dataRoot;
 		this.aspect = new Up2DataAspect<>(dataType);
 		this.separator = ";";
+		this.dateFormat = "yyyyMMdd";
+		this.charset = Charset.forName("windows-1252");
 	}
 
 	/**
@@ -51,7 +55,7 @@ public class Up2Data<T> {
 	 */
 	public File[] getFiles(Date date) {
 
-		String formattedDate = new SimpleDateFormat("yyyyMMdd").format(date);
+		String formattedDate = new SimpleDateFormat(dateFormat).format(date);
 		Path filePath = aspect.getSubChannel().isEmpty()
 				? Paths.get(
 						up2dataRoot,
@@ -107,7 +111,7 @@ public class Up2Data<T> {
 		ArrayList<T> list = new ArrayList<>(10000);
 		try {
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("windows-1252")));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis, charset));
 			try {
 
 				String line = reader.readLine();
@@ -152,7 +156,7 @@ public class Up2Data<T> {
 
 		File latestFile = getLatestFile(date);
 		return latestFile == null
-				? null
+				? new ArrayList<>(1)
 				: parseFile(latestFile);
 
 	}

@@ -140,12 +140,15 @@ public class EquityInstrument {
 	public Date trade_end;
 
 	/**
-	 * International Securities Identification Number (ISIN). A numbering system
-	 * designed by the United Nation's International Organisation for
-	 * Standardisation (ISO). The ISIN is composed of a 2-character prefix
+	 * International Securities Identification Number (ISIN).
+	 * 
+	 * <p>
+	 * A numbering system designed by the United Nation's International Organisation
+	 * for Standardisation (ISO). The ISIN is composed of a 2-character prefix
 	 * representing the country of issue, followed by the national security number
 	 * (if one exists), and a check digit. Each country has a national numbering
 	 * agency that assigns ISIN numbers for securities in that country.
+	 * </p>
 	 */
 	@Up2DataColumn(
 			name = "ISIN")
@@ -180,11 +183,14 @@ public class EquityInstrument {
 	public Integer allocation_round_lot;
 
 	/**
-	 * This attribute has the code of the trading currency. This field requires a
-	 * list of external code. These codes and values were made in external
-	 * spreadsheets to enable flexible maintenance in accordance with the
-	 * requirements of the BM&FBOVESPA updates. In this case the external file is in
-	 * ExternalActiveOrHistoricCurrencyCode ExternalCodeLists_BVMF.xls
+	 * This attribute has the code of the trading currency.
+	 * 
+	 * <p>
+	 * This field requires a list of external code. These codes and values were made
+	 * in external spreadsheets to enable flexible maintenance in accordance with
+	 * the requirements of the BM&FBOVESPA updates. In this case the external file
+	 * is in ExternalActiveOrHistoricCurrencyCode ExternalCodeLists_BVMF.xls
+	 * </p>
 	 */
 	@Up2DataColumn(
 			name = "TradgCcy")
