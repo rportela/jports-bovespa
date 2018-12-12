@@ -271,21 +271,21 @@ public class EquityInstrument {
 	 */
 	@Up2DataColumn(
 			name = "MktCptlstn")
-	public double market_cap;
+	public Double market_cap;
 
 	/**
 	 * Opening price of the day.
 	 */
 	@Up2DataColumn(
 			name = "FrstPric")
-	public double first_price;
+	public Double first_price;
 
 	/**
 	 * Closing price of the day.
 	 */
 	@Up2DataColumn(
 			name = "LastPric")
-	public double last_price;
+	public Double last_price;
 
 	/**
 	 * <p>
@@ -329,14 +329,14 @@ public class EquityInstrument {
 	 */
 	@Up2DataColumn(
 			name = "RghtsIssePric")
-	public double rights_issue_price;
+	public Double rights_issue_price;
 
 	/**
 	 * Contains the identification underlying instrument
 	 */
 	@Up2DataColumn(
 			name = "UndrlygInstrmId")
-	public Long underlying_instrument_id;
+	public String underlying_instrument_id;
 
 	/**
 	 * Asset Sub Type.
@@ -357,7 +357,7 @@ public class EquityInstrument {
 	 */
 	@Up2DataColumn(
 			name = "TrgtInstrmId")
-	public Long target_instrument_id;
+	public String target_instrument_id;
 
 	/**
 	 * AuctionType.

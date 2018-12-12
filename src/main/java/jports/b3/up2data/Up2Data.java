@@ -107,19 +107,15 @@ public class Up2Data<T> {
 		ArrayList<T> list = new ArrayList<>(10000);
 		try {
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8")));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("windows-1252")));
 			try {
 
 				String line = reader.readLine();
 				if (line != null && !line.isEmpty()) {
 					String[] headers = line.split(separator);
-					ArrayList<Up2DataAspectMember<T>> members = new ArrayList<>(headers.length);
-					for (int i = 0; i < headers.length; i++) {
-						Up2DataAspectMember<T> column = aspect.getColumn(headers[i]);
-						if (column != null)
-							members.add(column);
-					}
-					if (members.isEmpty())
+
+					Up2DataAspectMember<T>[] members = aspect.getColumnArray(headers);
+					if (members.length == 0)
 						throw new RuntimeException("No mapping of members found on " +
 								aspect.getDataType() +
 								". Perhaps you're missing something there.");
@@ -128,7 +124,8 @@ public class Up2Data<T> {
 						String[] cells = line.split(separator);
 						T entity = aspect.newInstance();
 						for (int i = 0; i < cells.length; i++) {
-							members.get(i).setValue(entity, cells[i]);
+							if (members[i] != null)
+								members[i].setValue(entity, cells[i]);
 						}
 						list.add(entity);
 					}
