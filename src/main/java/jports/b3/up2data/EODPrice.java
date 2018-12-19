@@ -11,7 +11,7 @@ import java.util.Date;
  * @author Giovanna Marinelli
  *
  */
-public class EODPriceFile {
+public class EODPrice {
 
 	/**
 	 * Reference date of the information.

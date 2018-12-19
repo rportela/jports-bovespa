@@ -14,4 +14,4 @@ package jports.b3.up2data;
 	subChannel = "TradeInformation", 
 	prefix = "Equities_EODPriceFile_")
 
-public class EquitiesEODPriceFile extends EODPriceFile {}
+public class EquitiesEODPrice extends EODPrice {}
