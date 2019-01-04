@@ -10,19 +10,19 @@ import java.lang.annotation.Target;
 public @interface Up2DataTable {
 
 	/**
-	 * The name of the channel to find files;
+	 * The name of the channel to find files
 	 * 
 	 * @return
 	 */
 	public String channel();
 
 	/*
-	 * The name of the sub Channel;
+	 * The name of the sub Channel
 	 */
 	public String subChannel();
 
 	/**
-	 * The name prefix for files in the sub channel;
+	 * The name prefix for files in the sub channel
 	 * 
 	 * @return
 	 */

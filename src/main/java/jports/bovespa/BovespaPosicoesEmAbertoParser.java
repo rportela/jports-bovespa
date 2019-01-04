@@ -15,8 +15,14 @@ public class BovespaPosicoesEmAbertoParser {
 
 	public List<BovespaPosicoesEmAberto> parse(InputStream is) throws IOException,
 			ParseException {
+		List<BovespaPosicoesEmAberto> list = new ArrayList<>(100);
+		parse(is, list);
+		return list;
+	}
 
-		ArrayList<BovespaPosicoesEmAberto> list = new ArrayList<>(100);
+	public void parse(InputStream is, List<BovespaPosicoesEmAberto> target) throws IOException,
+			ParseException {
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("windows-1252")));
 		String line;
 		Date data_pregao = null;
@@ -42,13 +48,12 @@ public class BovespaPosicoesEmAbertoParser {
 				item.preco_medio = Double.parseDouble(cells[6]);
 				item.temp = cells[7];
 				item.volume = Double.parseDouble(cells[8]);
-				list.add(item);
+				target.add(item);
 				break;
 			default:
 				throw new RuntimeException("Unknown record type " + lineType + " for SI_D_DBTCPARF.txt");
 			}
 		}
-		return list;
 	}
 
 }

@@ -6,6 +6,9 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class B3FtpSource {
 
@@ -35,9 +38,19 @@ public class B3FtpSource {
 		}
 	}
 
-	public HashMap<String, List<BovespaPosicoesEmAberto>> fetchPosicoesEmAbertoZip(InputStream is) throws IOException {
+	public Map<String, List<BovespaPosicoesEmAberto>> fetchPosicoesEmAbertoZip(InputStream is) throws IOException,
+			ParseException {
 
-		return null;
+		Map<String, List<BovespaPosicoesEmAberto>> map = new HashMap<>();
+		try (ZipInputStream zis = new ZipInputStream(is)) {
+			ZipEntry entry = zis.getNextEntry();
+			while (entry != null) {
+				map.put(entry.getName(), new BovespaPosicoesEmAbertoParser().parse(zis));
+				entry = zis.getNextEntry();
+			}
+		}
+		return map;
+
 	}
 
 }

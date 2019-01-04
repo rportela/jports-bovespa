@@ -12,9 +12,12 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import jports.ShowStopper;
 
 /**
  * This class contains useful methods for reading files from UP2DATA date
@@ -90,14 +93,11 @@ public class Up2Data<T> {
 			return null;
 		if (files.length == 1)
 			return files[0];
-		Arrays.sort(files, new Comparator<File>() {
-			@Override
-			public int compare(File o1, File o2) {
-				return o2.getName().compareTo(o1.getName());
-			}
-		});
+		Arrays.sort(files, fileComparator);
 		return files[0];
 	}
+
+	private static final Comparator<File> fileComparator = (o1, o2) -> o2.getName().compareTo(o1.getName());
 
 	/**
 	 * Parses a specific file for the underlying aspect's data type;
@@ -107,20 +107,17 @@ public class Up2Data<T> {
 	 * @throws IOException
 	 */
 	public List<T> parseFile(File file) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
-		ArrayList<T> list = new ArrayList<>(10000);
-		try {
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fis, charset));
-			try {
+		try (FileInputStream fis = new FileInputStream(file)) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(fis, charset))) {
 
 				String line = reader.readLine();
 				if (line != null && !line.isEmpty()) {
+					ArrayList<T> list = new ArrayList<>(10000);
 					String[] headers = line.split(separator);
 
 					Up2DataAspectMember<T>[] members = aspect.getColumnArray(headers);
 					if (members.length == 0)
-						throw new RuntimeException("No mapping of members found on " +
+						throw new ShowStopper("No mapping of members found on " +
 								aspect.getDataType() +
 								". Perhaps you're missing something there.");
 
@@ -133,16 +130,14 @@ public class Up2Data<T> {
 						}
 						list.add(entity);
 					}
+					return list;
+				} else {
+					return Collections.emptyList();
 				}
 
-			} finally {
-				reader.close();
 			}
-
-		} finally {
-			fis.close();
 		}
-		return list;
+
 	}
 
 	/**
