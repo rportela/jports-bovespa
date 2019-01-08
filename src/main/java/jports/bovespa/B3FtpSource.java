@@ -32,7 +32,7 @@ public class B3FtpSource {
 		URL url = new URL("ftp://ftp.bmf.com.br/ipnv2/SVI/DBTCPARF/SI_D_DBTCPARF.txt");
 		InputStream urlStream = url.openStream();
 		try {
-			return new BovespaPosicoesEmAbertoParser().parse(urlStream);
+			return new BovespaParser().parsePosicoesEmAberto(urlStream);
 		} finally {
 			urlStream.close();
 		}
@@ -45,7 +45,7 @@ public class B3FtpSource {
 		try (ZipInputStream zis = new ZipInputStream(is)) {
 			ZipEntry entry = zis.getNextEntry();
 			while (entry != null) {
-				map.put(entry.getName(), new BovespaPosicoesEmAbertoParser().parse(zis));
+				map.put(entry.getName(), new BovespaParser().parsePosicoesEmAberto(zis));
 				entry = zis.getNextEntry();
 			}
 		}

@@ -28,14 +28,14 @@ public class B3WebsiteSource {
 
 		URL url = new URL("http://www.b3.com.br/data/files/35/32/54/96/D93EF5103EE99DF5790D8AA8/Capital%20Social.xlsx");
 		List<BovespaCapitalSocial> capSociais = new ArrayList<>();
-		BovespaParsers parsers = new BovespaParsers();
+		BovespaParser parsers = new BovespaParser();
 
 		try (InputStream urlStream = url.openStream()) {
 			try (Workbook workbook = new XSSFWorkbook(urlStream)) {
 				Sheet datatypeSheet = workbook.getSheetAt(0);
 				Iterator<Row> iterator = datatypeSheet.iterator();
 
-				// Dont read first as second lines (some headers are merged cells)
+				// Don't read first and second lines (some headers are merged cells)
 				iterator.next();
 				iterator.next();
 

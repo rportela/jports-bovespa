@@ -1,1 +1,1 @@
-Put assets here to add them to git
+Put test assets here to add them to git
