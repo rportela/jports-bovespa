@@ -1,18 +1,16 @@
-# jports-bovespa
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
-This project is a helper for reading B3 (former Bovespa) data files.
+import com.google.gson.GsonBuilder;
 
-## UP2DATA
+import jports.GenericLogger;
+import jports.b3.up2data.EquityInstrument;
+import jports.b3.up2data.Up2Data;
 
-Up2data is a file service provided by B3 that delivers files using an installable client. This project can parse files to POJO classes that you can use for data related tasks.
+public class Up2DataExamples {
 
-### Equity Instruments File
-
-An example of how you can import the equities list from your up2data installation.
-
-```java
-
-/**
+	/**
 	 * This is the root folder of the UP2DATA installation.
 	 */
 	private static final String UP2DATA_ROOT = "L:\\UP2DATA";
@@ -92,4 +90,12 @@ An example of how you can import the equities list from your up2data installatio
 
 	}
 
-```
+	public static void main(String... args) {
+		try {
+			new Up2DataExamples().readEquityInstruments();
+		} catch (IOException e) {
+			GenericLogger.error(null, e);
+		}
+	}
+
+}
