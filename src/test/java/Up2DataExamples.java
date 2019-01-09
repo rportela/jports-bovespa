@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 
 import jports.GenericLogger;
 import jports.b3.up2data.EquityInstrument;
+import jports.b3.up2data.OptionOnEquitiesInstrument;
 import jports.b3.up2data.Up2Data;
 
 public class Up2DataExamples {
@@ -90,9 +91,36 @@ public class Up2DataExamples {
 
 	}
 
+	public void readOptionsOnEquitiesInstruments() throws IOException {
+		
+		Up2Data<OptionOnEquitiesInstrument> up2data = new Up2Data<>(UP2DATA_ROOT, OptionOnEquitiesInstrument.class);
+		List<File> allFiles = up2data.getAllFiles();
+
+		// This assumes that the files were written from oldest to newest. Optionally
+		// you can sort the list by file name or date to make sure your're reading the
+		// last one.
+		File last = allFiles.get(allFiles.size() - 1);
+
+		// Equities_OptionOnEquitiesInstrumentFile__yyyyMMdd_1.txt
+		System.out.println(last.getName());
+
+		// parses the file
+		List<OptionOnEquitiesInstrument> options = up2data.parseFile(last);
+
+		// just writes the first one as json so you can see how it looks like
+		if (!options.isEmpty()) {
+			System.out.println(
+					new GsonBuilder()
+							.setPrettyPrinting()
+							.create()
+							.toJson(
+									options.get(0)));
+		}
+	}
+
 	public static void main(String... args) {
 		try {
-			new Up2DataExamples().readEquityInstruments();
+			new Up2DataExamples().readOptionsOnEquitiesInstruments();
 		} catch (IOException e) {
 			GenericLogger.error(null, e);
 		}
