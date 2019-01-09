@@ -3,10 +3,15 @@ package jports.bovespa;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -39,10 +44,10 @@ public class B3WebsiteSource {
 				iterator.next();
 				iterator.next();
 
-				String nome_pregao = "";
+				String nomePregao = "";
 				String codigo = "";
-				String denom_social = "";
-				String segmento_mercado = "";
+				String denomSocial = "";
+				String segmentoMercado = "";
 
 				while (iterator.hasNext()) {
 
@@ -58,18 +63,18 @@ public class B3WebsiteSource {
 
 					// Case of subscribed stocks
 					if (!cellList.get(0).getStringCellValue().trim().isEmpty()) {
-						nome_pregao = cellList.get(0).getStringCellValue().trim();
+						nomePregao = cellList.get(0).getStringCellValue().trim();
 						codigo = cellList.get(1).getStringCellValue().trim();
-						denom_social = cellList.get(2).getStringCellValue().trim();
-						segmento_mercado = cellList.get(3).getStringCellValue().trim();
+						denomSocial = cellList.get(2).getStringCellValue().trim();
+						segmentoMercado = cellList.get(3).getStringCellValue().trim();
 
 					}
 
 					if (!cellList.get(4).getStringCellValue().trim().isEmpty()) {
-						cs.nome_pregao = nome_pregao;
+						cs.nome_pregao = nomePregao;
 						cs.codigo = codigo;
-						cs.denom_social = denom_social;
-						cs.segmento_mercado = segmento_mercado;
+						cs.denom_social = denomSocial;
+						cs.segmento_mercado = segmentoMercado;
 						cs.tipo_de_capital = cellList.get(4).getStringCellValue().trim();
 						cs.capital = cellList.get(5).getNumericCellValue();
 						cs.aprovado_em = parsers.dayMonthYear(cellList.get(6).getStringCellValue().trim());
@@ -100,4 +105,61 @@ public class B3WebsiteSource {
 		return capSociais;
 
 	}
+
+	private Map<String, List<BovespaSerieHistorica>> fetchSerieHistorica(String fileUrl) throws IOException {
+		URL url = new URL(fileUrl);
+		BovespaParser parser = new BovespaParser();
+		try (InputStream inputStream = url.openStream()) {
+			try (ZipInputStream zis = new ZipInputStream(inputStream)) {
+				Map<String, List<BovespaSerieHistorica>> map = new HashMap<>();
+				ZipEntry entry;
+				while ((entry = zis.getNextEntry()) != null) {
+					map.put(entry.getName(), parser.parseSerieHistorica(zis));
+				}
+				return map;
+			}
+		}
+	}
+
+	/**
+	 * Fetches "serie histórica anual" from B3.
+	 * 
+	 * @param ano
+	 * @return
+	 * @throws IOException
+	 */
+	public Map<String, List<BovespaSerieHistorica>> fetchSerieHistorica(int ano) throws IOException {
+		return fetchSerieHistorica("http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A" + ano + ".ZIP");
+	}
+
+	/**
+	 * Fetches "serie histórica mensal" from B3.
+	 * 
+	 * @param ano
+	 * @return
+	 * @throws IOException
+	 */
+	public Map<String, List<BovespaSerieHistorica>> fetchSerieHistorica(int ano, int mes) throws IOException {
+		String fileUrl = "http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_M" +
+				(mes < 10
+						? ("0" + mes)
+						: mes) +
+				ano +
+				".ZIP";
+		return fetchSerieHistorica(fileUrl);
+	}
+
+	/**
+	 * Fetches "serie histórica diaria" from B3.
+	 * 
+	 * @param ano
+	 * @return
+	 * @throws IOException
+	 */
+	public Map<String, List<BovespaSerieHistorica>> fetchSerieHistorica(Date date) throws IOException {
+		String dateFormatted = new SimpleDateFormat("ddMMyyyy").format(date);
+		String fileUrl = "http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_D" + dateFormatted + ".ZIP";
+		return fetchSerieHistorica(fileUrl);
+	}
+
 }

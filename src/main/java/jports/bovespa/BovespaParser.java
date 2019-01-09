@@ -112,6 +112,28 @@ public class BovespaParser {
 	}
 
 	/**
+	 * Parses an input stream expecting it to be the Serie Histórica file stream;
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public List<BovespaSerieHistorica> parseSerieHistorica(InputStream in) throws IOException {
+		return parseFixedLength(in, BovespaSerieHistorica.class, "01");
+	}
+
+	/**
+	 * Parses an input stream expecting it to be the PROD file stream;
+	 * 
+	 * @param prod
+	 * @return
+	 * @throws IOException
+	 */
+	public List<BovespaSerieHistorica> parseSerieHistorica(File prod) throws IOException {
+		return parseFixedLength(prod, BovespaSerieHistorica.class, "01");
+	}
+
+	/**
 	 * Parses an input stream expecting it to be a "posicoes em aberto" structure
 	 * like SI_D_DBTCPARF.
 	 * 
@@ -126,21 +148,21 @@ public class BovespaParser {
 		ArrayList<BovespaPosicoesEmAberto> target = new ArrayList<>(200);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("windows-1252")));
 		String line;
-		Date data_pregao = null;
-		Date data_arquivo = null;
+		Date dataPregao = null;
+		Date dataArquivo = null;
 
 		while ((line = reader.readLine()) != null) {
 			String[] cells = line.split("\\|");
 			int lineType = Integer.parseInt(cells[0]);
 			switch (lineType) {
 			case 1:
-				data_pregao = new SimpleDateFormat("yyyyMMdd").parse(cells[1]);
-				data_arquivo = new SimpleDateFormat("yyyyMMddHH:mm:ss").parse(cells[2] + cells[3]);
+				dataPregao = new SimpleDateFormat("yyyyMMdd").parse(cells[1]);
+				dataArquivo = new SimpleDateFormat("yyyyMMddHH:mm:ss").parse(cells[2] + cells[3]);
 				break;
 			case 2:
 				BovespaPosicoesEmAberto item = new BovespaPosicoesEmAberto();
-				item.data_arquivo = data_arquivo;
-				item.data_pregao = data_pregao;
+				item.data_arquivo = dataArquivo;
+				item.data_pregao = dataPregao;
 				item.ticker = cells[1];
 				item.nome = cells[2];
 				item.tipo_ativo = cells[3];
@@ -158,7 +180,5 @@ public class BovespaParser {
 
 		return target;
 	}
-	
-	
 
 }
