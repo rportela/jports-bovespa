@@ -106,6 +106,13 @@ public class B3WebsiteSource {
 
 	}
 
+	/**
+	 * Downloads, unzips and parses a serie historica file from an URL.
+	 * 
+	 * @param fileUrl
+	 * @return
+	 * @throws IOException
+	 */
 	private Map<String, List<BovespaSerieHistorica>> fetchSerieHistorica(String fileUrl) throws IOException {
 		URL url = new URL(fileUrl);
 		BovespaParser parser = new BovespaParser();

@@ -203,7 +203,7 @@ public class BovespaSerieHistorica {
 	@FixedLengthColumn(
 			start = 210,
 			end = 217)
-	public int lote;
+	public int fator_cotacao;
 
 	/**
 	 * 

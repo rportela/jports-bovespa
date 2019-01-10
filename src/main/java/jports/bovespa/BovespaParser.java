@@ -123,17 +123,6 @@ public class BovespaParser {
 	}
 
 	/**
-	 * Parses an input stream expecting it to be the PROD file stream;
-	 * 
-	 * @param prod
-	 * @return
-	 * @throws IOException
-	 */
-	public List<BovespaSerieHistorica> parseSerieHistorica(File prod) throws IOException {
-		return parseFixedLength(prod, BovespaSerieHistorica.class, "01");
-	}
-
-	/**
 	 * Parses an input stream expecting it to be a "posicoes em aberto" structure
 	 * like SI_D_DBTCPARF.
 	 * 
