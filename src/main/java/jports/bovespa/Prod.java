@@ -8,7 +8,7 @@ import jports.text.FixedLengthTable;
 
 @FixedLengthTable(
 		charset = "windows-1252")
-public class BovespaProd {
+public class Prod {
 
 	/**
 	 * CÓDIGO DO PAPEL NO SISTEMA ISIN SOB O QUAL FORAM CADASTRADOS PROVENTOS

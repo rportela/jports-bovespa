@@ -27,7 +27,7 @@ import jports.ShowStopper;
  *
  * @param <T>
  */
-public class Up2Data<T> {
+public class Up2DataSource<T> {
 
 	private final String up2dataRoot;
 	private final Up2DataAspect<T> aspect;
@@ -41,7 +41,7 @@ public class Up2Data<T> {
 	 * @param up2dataRoot
 	 * @param dataType
 	 */
-	public Up2Data(String up2dataRoot, Class<T> dataType) {
+	public Up2DataSource(String up2dataRoot, Class<T> dataType) {
 		this.up2dataRoot = up2dataRoot;
 		this.aspect = new Up2DataAspect<>(dataType);
 		this.separator = ";";

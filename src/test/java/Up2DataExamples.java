@@ -2,12 +2,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.gson.GsonBuilder;
-
 import jports.GenericLogger;
 import jports.b3.up2data.EquityInstrument;
 import jports.b3.up2data.OptionOnEquitiesInstrument;
-import jports.b3.up2data.Up2Data;
+import jports.b3.up2data.Up2DataSource;
 
 public class Up2DataExamples {
 
@@ -23,7 +21,7 @@ public class Up2DataExamples {
 	 */
 	public void readEquityInstruments() throws IOException {
 
-		Up2Data<EquityInstrument> up2data = new Up2Data<>(UP2DATA_ROOT, EquityInstrument.class);
+		Up2DataSource<EquityInstrument> up2data = new Up2DataSource<>(UP2DATA_ROOT, EquityInstrument.class);
 		List<File> allFiles = up2data.getAllFiles();
 
 		// This assumes that the files were written from oldest to newest. Optionally
@@ -39,12 +37,7 @@ public class Up2DataExamples {
 
 		// just writes the first one as json so you can see how it looks like
 		if (!equities.isEmpty()) {
-			System.out.println(
-					new GsonBuilder()
-							.setPrettyPrinting()
-							.create()
-							.toJson(
-									equities.get(0)));
+			GenericLogger.infoJson(this, equities.get(0));
 		}
 
 		/**
@@ -92,8 +85,9 @@ public class Up2DataExamples {
 	}
 
 	public void readOptionsOnEquitiesInstruments() throws IOException {
-		
-		Up2Data<OptionOnEquitiesInstrument> up2data = new Up2Data<>(UP2DATA_ROOT, OptionOnEquitiesInstrument.class);
+
+		Up2DataSource<OptionOnEquitiesInstrument> up2data = new Up2DataSource<>(UP2DATA_ROOT,
+				OptionOnEquitiesInstrument.class);
 		List<File> allFiles = up2data.getAllFiles();
 
 		// This assumes that the files were written from oldest to newest. Optionally
@@ -109,12 +103,9 @@ public class Up2DataExamples {
 
 		// just writes the first one as json so you can see how it looks like
 		if (!options.isEmpty()) {
-			System.out.println(
-					new GsonBuilder()
-							.setPrettyPrinting()
-							.create()
-							.toJson(
-									options.get(0)));
+			if (!options.isEmpty()) {
+				GenericLogger.infoJson(this, options.get(0));
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@ package jports.bovespa;
 
 import java.util.Date;
 
-public class BovespaPosicoesEmAberto {
+public class PosicoesEmAberto {
 
 	public Date data_pregao;
 

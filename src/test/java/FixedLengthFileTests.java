@@ -1,22 +1,26 @@
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import jports.bovespa.B3WebsiteSource;
+import jports.bovespa.BovespaDataSource;
 import jports.bovespa.BovespaParser;
-import jports.bovespa.BovespaProd;
+import jports.bovespa.PosicoesEmAberto;
+import jports.bovespa.Prod;
 
 public class FixedLengthFileTests {
+
+	private static final String localCache = "L:\\B3";
 
 	@Test
 	public void testBovespaProd() throws IOException {
 
 		try (InputStream prod = getClass().getResourceAsStream("PROD")) {
 
-			List<BovespaProd> proventos = new BovespaParser().parseProd(prod);
+			List<Prod> proventos = new BovespaParser().parseProd(prod);
 			Assert.assertTrue(proventos.size() > 0);
 
 		}
@@ -24,8 +28,15 @@ public class FixedLengthFileTests {
 	}
 
 	@Test
+	public void fetchPosicoesEmAberto() throws IOException,
+			ParseException {
+		List<PosicoesEmAberto> posicoesEmAberto = new BovespaDataSource(localCache).fetchPosicoesEmAberto();
+		Assert.assertTrue(posicoesEmAberto != null && !posicoesEmAberto.isEmpty());
+	}
+
+	@Test
 	public void fetchTUPY3from2010() throws IOException {
-		new B3WebsiteSource().fetchSerieHistorica(2010).values().forEach(list -> {
+		new BovespaDataSource(localCache).fetchSerieHistorica(2010).values().forEach(list -> {
 			list.stream().filter(i -> "TUPY3".equals(i.ticker)).forEach(item -> {
 				System.out.println(item.ticker +
 						"-> " +

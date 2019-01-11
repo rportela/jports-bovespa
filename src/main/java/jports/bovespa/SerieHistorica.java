@@ -16,7 +16,7 @@ import jports.text.FixedLengthTable;
  */
 @FixedLengthTable(
 		charset = "windows-1252")
-public class BovespaSerieHistorica {
+public class SerieHistorica {
 
 	@FixedLengthColumn(
 			start = 2,

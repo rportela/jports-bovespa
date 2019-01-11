@@ -11,7 +11,7 @@ import java.util.Date;
  *
  */
 
-public class BovespaCapitalSocial {
+public class CapitalSocial {
 	public String nome_pregao;
 
 	public String codigo;

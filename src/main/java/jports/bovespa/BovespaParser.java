@@ -11,7 +11,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import jports.text.FixedLengthAspect;
 
@@ -60,10 +71,9 @@ public class BovespaParser {
 	 * @throws IOException
 	 */
 	public <T> List<T> parseFixedLength(InputStream in, Class<T> dataType, String recordType) throws IOException {
-
-		FixedLengthAspect<T> aspect = new FixedLengthAspect<>(dataType);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, aspect.getCharset()));
-		ArrayList<T> list = new ArrayList<>(1000);
+		final FixedLengthAspect<T> aspect = new FixedLengthAspect<>(dataType);
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(in, aspect.getCharset()));
+		final ArrayList<T> list = new ArrayList<>(1000);
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			if (line.startsWith(recordType))
@@ -96,8 +106,8 @@ public class BovespaParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<BovespaProd> parseProd(InputStream in) throws IOException {
-		return parseFixedLength(in, BovespaProd.class, "01");
+	public List<Prod> parseProd(InputStream in) throws IOException {
+		return parseFixedLength(in, Prod.class, "01");
 	}
 
 	/**
@@ -107,8 +117,8 @@ public class BovespaParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<BovespaProd> parseProd(File prod) throws IOException {
-		return parseFixedLength(prod, BovespaProd.class, "01");
+	public List<Prod> parseProd(File prod) throws IOException {
+		return parseFixedLength(prod, Prod.class, "01");
 	}
 
 	/**
@@ -118,8 +128,29 @@ public class BovespaParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public List<BovespaSerieHistorica> parseSerieHistorica(InputStream in) throws IOException {
-		return parseFixedLength(in, BovespaSerieHistorica.class, "01");
+	public List<SerieHistorica> parseSerieHistorica(InputStream in) throws IOException {
+		return parseFixedLength(in, SerieHistorica.class, "01");
+	}
+
+	/**
+	 * Extracts serie historica file data from a ZIPPED stream of files. This method
+	 * returns a map containing the file name of the ZIPPED entry and the parsed
+	 * serie historica list.
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public Map<String, List<SerieHistorica>> parseSerieHistoricaZip(InputStream in) throws IOException {
+		BovespaParser parser = new BovespaParser();
+		try (ZipInputStream zis = new ZipInputStream(in)) {
+			Map<String, List<SerieHistorica>> map = new HashMap<>();
+			ZipEntry entry;
+			while ((entry = zis.getNextEntry()) != null) {
+				map.put(entry.getName(), parser.parseSerieHistorica(zis));
+			}
+			return map;
+		}
 	}
 
 	/**
@@ -131,10 +162,10 @@ public class BovespaParser {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public List<BovespaPosicoesEmAberto> parsePosicoesEmAberto(InputStream is) throws IOException,
+	public List<PosicoesEmAberto> parsePosicoesEmAberto(InputStream is) throws IOException,
 			ParseException {
 
-		ArrayList<BovespaPosicoesEmAberto> target = new ArrayList<>(200);
+		ArrayList<PosicoesEmAberto> target = new ArrayList<>(200);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("windows-1252")));
 		String line;
 		Date dataPregao = null;
@@ -149,7 +180,7 @@ public class BovespaParser {
 				dataArquivo = new SimpleDateFormat("yyyyMMddHH:mm:ss").parse(cells[2] + cells[3]);
 				break;
 			case 2:
-				BovespaPosicoesEmAberto item = new BovespaPosicoesEmAberto();
+				PosicoesEmAberto item = new PosicoesEmAberto();
 				item.data_arquivo = dataArquivo;
 				item.data_pregao = dataPregao;
 				item.ticker = cells[1];
@@ -170,4 +201,105 @@ public class BovespaParser {
 		return target;
 	}
 
+	/**
+	 * Parses an input stream expecting it to be a collection of ZIPPED "posicoes em
+	 * aberto" structures.
+	 * 
+	 * @param is
+	 * @return
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public Map<String, List<PosicoesEmAberto>> parsePosicoesEmAbertoZip(InputStream is) throws IOException,
+			ParseException {
+
+		Map<String, List<PosicoesEmAberto>> map = new HashMap<>();
+		try (ZipInputStream zis = new ZipInputStream(is)) {
+			ZipEntry entry = zis.getNextEntry();
+			while (entry != null) {
+				map.put(entry.getName(), new BovespaParser().parsePosicoesEmAberto(zis));
+				entry = zis.getNextEntry();
+			}
+		}
+		return map;
+
+	}
+
+	/**
+	 * Parses a list of Capital Social from an input stream containing the XLSX file
+	 * from Bovespa.
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public List<CapitalSocial> parseCapitalSocial(InputStream in) throws IOException {
+		try (Workbook workbook = new XSSFWorkbook(in)) {
+			List<CapitalSocial> capSociais = new ArrayList<>();
+			BovespaParser parsers = new BovespaParser();
+			Sheet datatypeSheet = workbook.getSheetAt(0);
+			Iterator<Row> iterator = datatypeSheet.iterator();
+
+			// Don't read first and second lines (some headers are merged cells)
+			iterator.next();
+			iterator.next();
+
+			String nomePregao = "";
+			String codigo = "";
+			String denomSocial = "";
+			String segmentoMercado = "";
+
+			while (iterator.hasNext()) {
+
+				Row currentRow = iterator.next();
+
+				// List of cells for each row
+				List<Cell> cellList = new ArrayList<>();
+				Iterator<Cell> cellIterator = currentRow.iterator();
+				while (cellIterator.hasNext())
+					cellList.add(cellIterator.next());
+
+				CapitalSocial cs = new CapitalSocial();
+
+				// Case of subscribed stocks
+				if (!cellList.get(0).getStringCellValue().trim().isEmpty()) {
+					nomePregao = cellList.get(0).getStringCellValue().trim();
+					codigo = cellList.get(1).getStringCellValue().trim();
+					denomSocial = cellList.get(2).getStringCellValue().trim();
+					segmentoMercado = cellList.get(3).getStringCellValue().trim();
+
+				}
+
+				if (!cellList.get(4).getStringCellValue().trim().isEmpty()) {
+					cs.nome_pregao = nomePregao;
+					cs.codigo = codigo;
+					cs.denom_social = denomSocial;
+					cs.segmento_mercado = segmentoMercado;
+					cs.tipo_de_capital = cellList.get(4).getStringCellValue().trim();
+					cs.capital = cellList.get(5).getNumericCellValue();
+					cs.aprovado_em = parsers.dayMonthYear(cellList.get(6).getStringCellValue().trim());
+					cs.qtd_on = (int) cellList.get(7).getNumericCellValue();
+					cs.qtd_pn = (int) cellList.get(8).getNumericCellValue();
+					cs.qtd_total = (int) cellList.get(9).getNumericCellValue();
+					cs.classe_1 = cellList.get(10).getStringCellValue().trim();
+					cs.qtd_classe_1 = (int) cellList.get(11).getNumericCellValue();
+					cs.classe_2 = cellList.get(12).getStringCellValue().trim();
+					cs.qtd_classe_2 = (int) cellList.get(13).getNumericCellValue();
+					cs.classe_3 = cellList.get(14).getStringCellValue().trim();
+					cs.qtd_classe_3 = (int) cellList.get(15).getNumericCellValue();
+					cs.classe_4 = cellList.get(16).getStringCellValue().trim();
+					cs.qtd_classe_4 = (int) cellList.get(17).getNumericCellValue();
+					cs.classe_5 = cellList.get(18).getStringCellValue().trim();
+					cs.qtd_classe_5 = (int) cellList.get(19).getNumericCellValue();
+					cs.classe_6 = cellList.get(20).getStringCellValue().trim();
+					cs.qtd_classe_6 = (int) cellList.get(21).getNumericCellValue();
+				}
+				cs.updated_at = new Date();
+
+				capSociais.add(cs);
+			}
+
+			return capSociais;
+		}
+	}
 }
