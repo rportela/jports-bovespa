@@ -7,7 +7,8 @@ import jports.text.FixedLengthColumn;
 import jports.text.FixedLengthTable;
 
 @FixedLengthTable(
-		charset = "windows-1252")
+		charset = "windows-1252",
+		linePrefix = "01")
 public class Prod {
 
 	/**

@@ -3,6 +3,7 @@ package jports.bovespa;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +25,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import jports.adapters.DateAdapter;
+import jports.adapters.LongAdapter;
+import jports.text.CsvAspect;
 import jports.text.FixedLengthAspect;
 
 public class BovespaParser {
@@ -59,47 +63,6 @@ public class BovespaParser {
 	}
 
 	/**
-	 * Parses an input stream using a fixed length aspect annotated on the Class<T>
-	 * dataType.
-	 * 
-	 * @param in
-	 * @param dataType
-	 * @param recordType
-	 *            Every B3 fixed length file has one or two leading chars that
-	 *            correspond to the recordType.
-	 * @return
-	 * @throws IOException
-	 */
-	public <T> List<T> parseFixedLength(InputStream in, Class<T> dataType, String recordType) throws IOException {
-		final FixedLengthAspect<T> aspect = new FixedLengthAspect<>(dataType);
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(in, aspect.getCharset()));
-		final ArrayList<T> list = new ArrayList<>(1000);
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			if (line.startsWith(recordType))
-				list.add(aspect.parseLine(line));
-		}
-		return list;
-	}
-
-	/**
-	 * Parses a file using a fixed length aspect annotated on the Class<T> dataType.
-	 * 
-	 * @param file
-	 * @param dataType
-	 * @param recordType
-	 *            Every B3 fixed length file has one or two leading chars that
-	 *            correspond to the recordType.
-	 * @return
-	 * @throws IOException
-	 */
-	public <T> List<T> parseFixedLength(File file, Class<T> dataType, String recordType) throws IOException {
-		try (FileInputStream fis = new FileInputStream(file)) {
-			return parseFixedLength(fis, dataType, recordType);
-		}
-	}
-
-	/**
 	 * Parses an input stream expecting it to be the PROD file stream;
 	 * 
 	 * @param in
@@ -107,7 +70,7 @@ public class BovespaParser {
 	 * @throws IOException
 	 */
 	public List<Prod> parseProd(InputStream in) throws IOException {
-		return parseFixedLength(in, Prod.class, "01");
+		return new FixedLengthAspect<Prod>(Prod.class).parse(in);
 	}
 
 	/**
@@ -118,7 +81,7 @@ public class BovespaParser {
 	 * @throws IOException
 	 */
 	public List<Prod> parseProd(File prod) throws IOException {
-		return parseFixedLength(prod, Prod.class, "01");
+		return new FixedLengthAspect<Prod>(Prod.class).parse(prod);
 	}
 
 	/**
@@ -129,7 +92,7 @@ public class BovespaParser {
 	 * @throws IOException
 	 */
 	public List<SerieHistorica> parseSerieHistorica(InputStream in) throws IOException {
-		return parseFixedLength(in, SerieHistorica.class, "01");
+		return new FixedLengthAspect<SerieHistorica>(SerieHistorica.class).parse(in);
 	}
 
 	/**
@@ -141,15 +104,14 @@ public class BovespaParser {
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String, List<SerieHistorica>> parseSerieHistoricaZip(InputStream in) throws IOException {
+	public List<SerieHistorica> parseSerieHistoricaZip(InputStream in) throws IOException {
 		BovespaParser parser = new BovespaParser();
 		try (ZipInputStream zis = new ZipInputStream(in)) {
-			Map<String, List<SerieHistorica>> map = new HashMap<>();
-			ZipEntry entry;
-			while ((entry = zis.getNextEntry()) != null) {
-				map.put(entry.getName(), parser.parseSerieHistorica(zis));
+			if (zis.getNextEntry() != null) {
+				return parser.parseSerieHistorica(zis);
+			} else {
+				return new ArrayList<>(0);
 			}
-			return map;
 		}
 	}
 
@@ -300,6 +262,142 @@ public class BovespaParser {
 			}
 
 			return capSociais;
+		}
+	}
+
+	/**
+	 * Parses a stream of Titulo Negociavel as expecting it to be as described in:
+	 * http://bvmf.bmfbovespa.com.br/cias-listadas/Titulos-Negociaveis/download/Titulos_Negociaveis.PDF
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public TituloNegociavelFile parseTituloNegociavel(InputStream in) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("windows-1252")));
+		FixedLengthAspect<TituloNegociavelEmpresa> flEmpresa = new FixedLengthAspect<>(TituloNegociavelEmpresa.class);
+		FixedLengthAspect<TituloNegociavel> flItem = new FixedLengthAspect<>(TituloNegociavel.class);
+		String line;
+		TituloNegociavelFile tn = new TituloNegociavelFile();
+		while ((line = reader.readLine()) != null) {
+			if (line.startsWith("01")) {
+				tn.addEmpresa(flEmpresa.parseLine(line));
+			} else if (line.startsWith("02")) {
+				tn.addTitulo(flItem.parseLine(line));
+			}
+		}
+		return tn;
+	}
+
+	/**
+	 * Extracts and parses a stream of Titulo Negociavel expecting it to be as
+	 * described in:
+	 * 
+	 * http://bvmf.bmfbovespa.com.br/cias-listadas/Titulos-Negociaveis/download/Titulos_Negociaveis.PDF
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public TituloNegociavelFile parseTituloNegociavelZip(InputStream in) throws IOException {
+		try (ZipInputStream zis = new ZipInputStream(in)) {
+			return zis.getNextEntry() != null
+					? parseTituloNegociavel(zis)
+					: null;
+		}
+	}
+
+	/**
+	 * Unfortunately, Bovespa choice of CSV separators was poor. There are records
+	 * that contain the separator in them. This is a workaround to parse the file
+	 * using a different separator and cleaning up the entries.
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	private List<IsinFileEmissor> parseIsinEmissores(InputStream in) throws IOException {
+
+		ArrayList<IsinFileEmissor> emissores = new ArrayList<>(40000);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("windows-1252")));
+		LongAdapter longAdapter = new LongAdapter();
+		DateAdapter dateAdapter = new DateAdapter("yyyyMMdd");
+		String line = reader.readLine();
+		while (line != null) {
+
+			String[] cells = line.split("\",\"");
+			cells[0] = cells[0].substring(1);
+			String lastText = cells[cells.length - 1];
+			lastText = lastText.substring(0, lastText.length() - 1);
+			cells[cells.length - 1] = lastText;
+
+			IsinFileEmissor emissor = new IsinFileEmissor();
+			emissor.codigo = cells[0];
+			emissor.nome = cells[1];
+			emissor.cnpj = longAdapter.parse(cells[2]);
+			emissor.data_criacao = dateAdapter.parse(cells[3]);
+			emissores.add(emissor);
+
+			line = reader.readLine();
+		}
+		return emissores;
+	}
+
+	/**
+	 * Extracts and parses a stream expecting it to be of type ISIN.
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public IsinFile parseIsin(InputStream in) throws IOException {
+		try (ZipInputStream zis = new ZipInputStream(in)) {
+			ZipEntry entry = zis.getNextEntry();
+			IsinFile isin = new IsinFile();
+			while (entry != null) {
+				String entryName = entry.getName().toUpperCase();
+				if (entryName.startsWith("EMISSOR")) {
+					isin.setEmissores(parseIsinEmissores(zis));
+				} else if (entryName.startsWith("NUMERACA")) {
+					isin.setTitulos(new CsvAspect<>(IsinFileTitulo.class).parse(zis));
+				}
+				entry = zis.getNextEntry();
+			}
+			return isin;
+		}
+	}
+
+	/**
+	 * Extracts and parses a file expecting it to be of type ISIN.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public IsinFile parseIsin(File file) throws IOException {
+		try (FileInputStream fis = new FileInputStream(file)) {
+			return parseIsin(fis);
+		}
+	}
+
+	/**
+	 * Parses a ZIPPED input stream expecting it to be of type NEGS as described on:
+	 * 
+	 * ftp://ftp.bmf.com.br/marketdata/NEG_LAYOUT_english.txt
+	 * 
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
+	public List<Negs> parseNegs(InputStream in) throws IOException {
+		try (ZipInputStream zis = new ZipInputStream(in)) {
+			ZipEntry entry = zis.getNextEntry();
+			if (entry != null) {
+				return new CsvAspect<Negs>(Negs.class).parse(zis);
+			} else {
+				return new ArrayList<>(0);
+			}
 		}
 	}
 }

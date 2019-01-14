@@ -83,7 +83,7 @@ public class BovespaDataSource {
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String, List<SerieHistorica>> fetchSerieHistorica(int ano) throws IOException {
+	public List<SerieHistorica> fetchSerieHistorica(int ano) throws IOException {
 
 		String fileName = "COTAHIST_A" + ano + ".ZIP";
 		URL remote = new URL(
@@ -106,7 +106,7 @@ public class BovespaDataSource {
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String, List<SerieHistorica>> fetchSerieHistorica(int ano, int mes) throws IOException {
+	public List<SerieHistorica> fetchSerieHistorica(int ano, int mes) throws IOException {
 
 		String fileName = "COTAHIST_M" +
 				(mes < 10
@@ -135,7 +135,7 @@ public class BovespaDataSource {
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String, List<SerieHistorica>> fetchSerieHistorica(Date date) throws IOException {
+	public List<SerieHistorica> fetchSerieHistorica(Date date) throws IOException {
 
 		String fileName = "COTAHIST_D" + new SimpleDateFormat("ddMMyyyy").format(date) + ".ZIP";
 		URL remote = new URL(
@@ -178,6 +178,47 @@ public class BovespaDataSource {
 				"posicoes_em_aberto",
 				fileName)) {
 			return new BovespaParser().parsePosicoesEmAberto(in);
+		}
+
+	}
+
+	/**
+	 * Títulos Negociáveis
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public TituloNegociavelFile fetchTitulosNegociaveis() throws IOException {
+		URL remote = new URL(
+				"http://bvmf.bmfbovespa.com.br/suplemento/ExecutaAcaoDownload.asp?arquivo=Titulos_Negociaveis.zip&server=L");
+
+		try (InputStream is = locateInputStream(
+				remote,
+				false,
+				"titulos_negociaveis",
+				formatDailyFileName("titulos_negociaveis", ".zip"))) {
+			return new BovespaParser().parseTituloNegociavelZip(is);
+		}
+	}
+
+	/**
+	 * Parses the NEG file (Trades). We have no idea why they didn't name this
+	 * Trades (in English).
+	 * 
+	 * @param date
+	 * @return
+	 * @throws IOException
+	 */
+	public List<Negs> fetchNegsMercadoAVista(Date date) throws IOException {
+		String fileName = "NEG_" + new SimpleDateFormat("yyyyMMdd").format(date) + ".zip";
+		URL remote = new URL("ftp://ftp.bmf.com.br/marketdata/Bovespa-Vista/" + fileName);
+		try (InputStream is = locateInputStream(
+				remote,
+				false,
+				"market_data",
+				"mercado_a_vista",
+				fileName)) {
+			return new BovespaParser().parseNegs(is);
 		}
 
 	}

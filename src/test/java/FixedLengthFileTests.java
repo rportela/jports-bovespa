@@ -10,6 +10,7 @@ import jports.bovespa.BovespaDataSource;
 import jports.bovespa.BovespaParser;
 import jports.bovespa.PosicoesEmAberto;
 import jports.bovespa.Prod;
+import jports.bovespa.TituloNegociavel;
 
 public class FixedLengthFileTests {
 
@@ -36,16 +37,33 @@ public class FixedLengthFileTests {
 
 	@Test
 	public void fetchTUPY3from2010() throws IOException {
-		new BovespaDataSource(localCache).fetchSerieHistorica(2010).values().forEach(list -> {
-			list.stream().filter(i -> "TUPY3".equals(i.ticker)).forEach(item -> {
-				System.out.println(item.ticker +
-						"-> " +
-						item.data_pregao +
-						" -> " +
-						item.preco_ultimo +
-						" -> " +
-						item.preco_melhor_compra);
-			});
-		});
+		new BovespaDataSource(localCache).fetchSerieHistorica(2010).stream().filter(i -> "TUPY3".equals(i.ticker))
+				.forEach(item -> {
+					System.out.println(item.ticker +
+							"-> " +
+							item.data_pregao +
+							" -> " +
+							item.preco_ultimo +
+							" -> " +
+							item.preco_melhor_oferta_compra);
+				});
+
+	}
+
+	@Test
+	public void fetchTitulosNegociaveis() throws IOException {
+		List<TituloNegociavel> titulos = new BovespaDataSource(localCache).fetchTitulosNegociaveis().getTitulos();
+
+		titulos.stream()
+				.filter(i -> i.ticker.startsWith("PETR")).forEach(item -> {
+					System.out.println(item.ticker +
+							"-> " +
+							item.isin +
+							" -> " +
+							item.isin_objeto +
+							" -> " +
+							item.vencimento);
+				});
+
 	}
 }

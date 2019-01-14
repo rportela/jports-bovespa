@@ -15,7 +15,8 @@ import jports.text.FixedLengthTable;
  *
  */
 @FixedLengthTable(
-		charset = "windows-1252")
+		charset = "windows-1252",
+		linePrefix = "01")
 public class SerieHistorica {
 
 	@FixedLengthColumn(
@@ -31,7 +32,7 @@ public class SerieHistorica {
 	@FixedLengthColumn(
 			start = 10,
 			end = 12)
-	public int bdi;
+	public int bdi_id;
 
 	/**
 	 * CODNEG - CÓDIGO DE NEGOCIAÇÃO DO PAPEL
@@ -55,7 +56,7 @@ public class SerieHistorica {
 	@FixedLengthColumn(
 			start = 27,
 			end = 39)
-	public String empresa;
+	public String nome_resumido;
 
 	/**
 	 * ESPECIFICAÇÃO DO PAPEL - VER TABELA ANEXA
@@ -133,7 +134,7 @@ public class SerieHistorica {
 			start = 121,
 			end = 134,
 			adapter = DoubleDiv100.class)
-	public double preco_melhor_compra;
+	public double preco_melhor_oferta_compra;
 
 	/**
 	 * PREÇO DA MELHOR OFERTA DE VENDA DO PAPEL-MERCADO
@@ -142,7 +143,7 @@ public class SerieHistorica {
 			start = 134,
 			end = 147,
 			adapter = DoubleDiv100.class)
-	public double preco_melhor_venda;
+	public double preco_melhor_oferta_venda;
 
 	/**
 	 * NÚMERO DE NEGÓCIOS EFETUADOS COM O PAPEL- MERCADO NO PREGÃO
@@ -150,7 +151,7 @@ public class SerieHistorica {
 	@FixedLengthColumn(
 			start = 147,
 			end = 152)
-	public int quantidade_negocios;
+	public int numero_negocios;
 
 	/**
 	 * QUANTIDADE TOTAL DE TÍTULOS NEGOCIADOS NESTE PAPEL- MERCADO
@@ -158,7 +159,7 @@ public class SerieHistorica {
 	@FixedLengthColumn(
 			start = 152,
 			end = 170)
-	public long quantidade_titulos;
+	public long numero_titulos_negociados;
 
 	/**
 	 * VOLUME TOTAL DE TÍTULOS NEGOCIADOS NESTE PAPEL- MERCADO
@@ -167,7 +168,7 @@ public class SerieHistorica {
 			start = 170,
 			end = 188,
 			adapter = DoubleDiv100.class)
-	public double volume_titulos;
+	public double volume_negociado;
 
 	/**
 	 * PREÇO DE EXERCÍCIO PARA O MERCADO DE OPÇÕES OU VALOR DO CONTRATO PARA O
