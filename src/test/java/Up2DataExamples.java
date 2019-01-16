@@ -37,7 +37,7 @@ public class Up2DataExamples {
 
 		// just writes the first one as json so you can see how it looks like
 		if (!equities.isEmpty()) {
-			GenericLogger.infoJson(this, equities.get(0));
+			GenericLogger.info(getClass(), equities.get(0));
 		}
 
 		/**
@@ -104,7 +104,7 @@ public class Up2DataExamples {
 		// just writes the first one as json so you can see how it looks like
 		if (!options.isEmpty()) {
 			if (!options.isEmpty()) {
-				GenericLogger.infoJson(this, options.get(0));
+				GenericLogger.info(getClass(), options.get(0));
 			}
 		}
 	}
@@ -113,7 +113,7 @@ public class Up2DataExamples {
 		try {
 			new Up2DataExamples().readOptionsOnEquitiesInstruments();
 		} catch (IOException e) {
-			GenericLogger.error(null, e);
+			GenericLogger.error(Up2DataExamples.class, e);
 		}
 	}
 
