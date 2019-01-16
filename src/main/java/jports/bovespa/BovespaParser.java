@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -319,7 +320,7 @@ public class BovespaParser {
 	private List<IsinFileEmissor> parseIsinEmissores(InputStream in) throws IOException {
 
 		ArrayList<IsinFileEmissor> emissores = new ArrayList<>(40000);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("windows-1252")));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 		LongAdapter longAdapter = new LongAdapter();
 		DateAdapter dateAdapter = new DateAdapter("yyyyMMdd");
 		String line = reader.readLine();

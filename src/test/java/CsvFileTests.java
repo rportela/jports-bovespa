@@ -25,6 +25,8 @@ public class CsvFileTests {
 		List<IsinFileEmissor> emissores = isin.getEmissores();
 		List<IsinFileTitulo> titulos = isin.getTitulos();
 
+		emissores.stream().forEach(t -> System.out.println(t.nome));
+
 		Assert.assertTrue(emissores != null);
 		Assert.assertTrue(!emissores.isEmpty());
 		Assert.assertTrue(titulos != null);
