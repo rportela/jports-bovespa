@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -27,18 +29,24 @@ public class DataQualityTests {
 			}
 		});
 
+		StringBuilder log = new StringBuilder(1024);
+
 		cnpjMap.entrySet().stream().filter(e -> e.getValue().size() > 1).forEach(e -> {
-			System.out.println("______________________");
-			System.out.println("Duplicates of " + e.getKey());
+			log.append("______________________\r\n");
+			log.append("Duplicates of " + e.getKey()).append("\r\n");
 			for (IsinFileEmissor emissor : e.getValue()) {
-				System.out.println(emissor.nome + " (" + emissor.codigo + ")");
+				log.append(emissor.nome + " (" + emissor.codigo + ")").append("\r\n");
 			}
 		});
+
+		System.out.println(log.toString());
+		Files.writeString(Paths.get("testIsinForDuplicateCnpj.txt"), log.toString());
 	}
 
 	@Test
 	public void testSerieHistoricaDiariaForWrongIsin() throws IOException {
 		Date date = new GregorianCalendar(2019, 0, 22).getTime();
+		StringBuilder log = new StringBuilder(1024);
 		new BovespaDataSource(null)
 				.fetchSerieHistorica(date)
 				.stream()
@@ -57,9 +65,15 @@ public class DataQualityTests {
 					}
 
 				}).forEach(item -> {
-					System.out.println(item.ticker + "-> " + item.isin);
+					log
+							.append(item.ticker)
+							.append(" -> ")
+							.append(item.isin)
+							.append("\r\n");
 				});
 
+		System.out.println(log.toString());
+		Files.writeString(Paths.get("testSerieHistoricaDiariaForWrongIsin.txt"), log.toString());
 	}
 
 }
