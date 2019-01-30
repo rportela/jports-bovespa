@@ -40,9 +40,9 @@ public class DataQualityTests {
 		});
 
 		System.out.println(log.toString());
-		Files.writeString(
+		Files.write(
 				Paths.get("testIsinForDuplicateCnpj.txt"),
-				log.toString());
+				log.toString().getBytes());
 	}
 
 	@Test
@@ -75,9 +75,9 @@ public class DataQualityTests {
 				});
 
 		System.out.println(log.toString());
-		Files.writeString(
+		Files.write(
 				Paths.get("testSerieHistoricaDiariaForWrongIsin.txt"),
-				log.toString());
+				log.toString().getBytes());
 	}
 
 }
