@@ -89,7 +89,7 @@ public class Up2DataSource<T> {
 	 */
 	public File getLatestFile(Date date) {
 		File[] files = getFiles(date);
-		if (files.length == 0)
+		if (files == null || files.length == 0)
 			return null;
 		if (files.length == 1)
 			return files[0];
