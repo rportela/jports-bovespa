@@ -12,7 +12,7 @@ public class Up2DataAspectMember<T> extends DataAspectMember<T> {
 
 	public Up2DataAspectMember(Up2DataColumn column, AspectMemberAccessor<T> accessor) {
 		super(accessor, ColumnType.REGULAR, column.name());
-		this.adapter = AdapterFactory.createAdapter(accessor.getDataType(), column.adapter(), column.format());
+		this.adapter = AdapterFactory.createAdapter(accessor, column.adapter(), column.format());
 	}
 
 	@Override
