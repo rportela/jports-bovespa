@@ -1,5 +1,6 @@
 package jports.b3.up2data;
 
+import jports.ShowStopper;
 import jports.adapters.Adapter;
 import jports.adapters.AdapterFactory;
 import jports.data.ColumnType;
@@ -12,7 +13,7 @@ public class Up2DataAspectMember<T> extends DataAspectMember<T> {
 
 	public Up2DataAspectMember(Up2DataColumn column, AspectMemberAccessor<T> accessor) {
 		super(accessor, ColumnType.REGULAR, column.name());
-		this.adapter = AdapterFactory.createAdapter(accessor.getDataType(), column.adapter(), column.format());
+		this.adapter = AdapterFactory.createAdapter(accessor, column.adapter(), column.format());
 	}
 
 	@Override
@@ -21,7 +22,7 @@ public class Up2DataAspectMember<T> extends DataAspectMember<T> {
 			Object nvalue = adapter.convert(value);
 			super.setValue(target, nvalue);
 		} catch (Exception e) {
-			throw new RuntimeException("Unable to set value of " +
+			throw new ShowStopper("Unable to set value of " +
 					this.getName() +
 					" to " +
 					value +
