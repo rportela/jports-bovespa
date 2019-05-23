@@ -11,7 +11,7 @@ import java.util.Date;
  *
  */
 
-@Up2DataTable(channel = "CorporateAction", prefix = "CorporateAction_CorporateActionFile_", subChannel = "")
+@Up2DataTable(channel = "Corporate_Action", subChannel = "CorporateAction", prefix = "Corporate_Action_CorporateActionFile_")
 public class CorporateAction {
 
 	/**
@@ -508,7 +508,7 @@ public class CorporateAction {
 	 * para compor o cálculo do saldo base do evento corporativo
 	 */
 	@Up2DataColumn(name = "RqstFctr")
-	public Integer requisite_factor;
+	public Double requisite_factor;
 
 	/**
 	 * Preço de Emissão do Papel em Subscrição
@@ -539,7 +539,7 @@ public class CorporateAction {
 	 * para compor o cálculo do saldo base do evento corporativo.
 	 */
 	@Up2DataColumn(name = "RsltFctr")
-	public Integer result_factor;
+	public Double result_factor;
 
 	/**
 	 * Valor do direito como resultado.
