@@ -70,7 +70,6 @@ public class Up2DataSource<T> {
 						aspect.getSubChannel(),
 						formattedDate);
 		
-		System.out.println("File path -> " + filePath);
 						
 		return filePath.toFile().listFiles(new FilenameFilter() {
 			final String name_prefix = aspect.getFilePrefix();
