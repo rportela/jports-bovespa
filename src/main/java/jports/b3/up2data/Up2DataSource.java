@@ -34,6 +34,18 @@ public class Up2DataSource<T> {
 	private final String separator;
 	private final String dateFormat;
 	private final Charset charset;
+	
+	public String getChannel() {
+		return aspect.getChannel();
+	}
+	
+	public String getSubChannel() {
+		return aspect.getSubChannel();
+	}
+	
+	public String getFilePrefix() {
+		return aspect.getFilePrefix();
+	}
 
 	/**
 	 * Creates a new Up2Data extractor;
