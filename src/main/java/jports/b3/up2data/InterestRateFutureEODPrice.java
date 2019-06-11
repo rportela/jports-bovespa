@@ -13,6 +13,6 @@ package jports.b3.up2data;
 	channel = "Interest Rate", 
 	subChannel = "TradeInformation", 
 	prefix = "Interest_Rate_EODPriceFile_")
-public class InterestRateEODPrice extends EODPrice {
+public class InterestRateFutureEODPrice extends EODPrice {
 
 }

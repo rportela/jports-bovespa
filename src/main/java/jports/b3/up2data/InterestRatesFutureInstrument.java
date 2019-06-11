@@ -10,6 +10,6 @@ package jports.b3.up2data;
  *
  */
 @Up2DataTable(channel = "Interest_Rate", subChannel = "SecurityList", prefix = "Interest_Rate_FutureContractsInstrumentFile_")
-public class InterestRatesFutureContractInstrument extends FutureContractInstrument {
+public class InterestRatesFutureInstrument extends FutureContractInstrument {
 
 }

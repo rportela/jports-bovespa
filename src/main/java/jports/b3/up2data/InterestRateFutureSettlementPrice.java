@@ -9,6 +9,6 @@ package jports.b3.up2data;
 @Up2DataTable(channel = "Interest_Rate", 
 	subChannel = "SettlementPrice", 
 	prefix = "Interest_Rate_EOD_SettlementPriceFile_Futures_")
-public class InterestRateSettlementPrice extends SettlementPrice {
+public class InterestRateFutureSettlementPrice extends SettlementPrice {
 
 }

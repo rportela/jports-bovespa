@@ -13,6 +13,6 @@ package jports.b3.up2data;
 	channel = "Currency", 
 	subChannel = "TradeInformation", 
 	prefix = "Currency_EODPriceFile_")
-public class CurrencyEODPrice extends EODPrice {
+public class CurrencyFutureEODPrice extends EODPrice {
 
 }
