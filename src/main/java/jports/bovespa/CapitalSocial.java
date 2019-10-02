@@ -26,36 +26,38 @@ public class CapitalSocial {
 
 	public Date aprovado_em;
 
-	public Integer qtd_on;
+	public Double qtd_on;
 
-	public Integer qtd_pn;
+	public Double qtd_pn;
 
-	public Integer qtd_total;
+	public Double qtd_total;
 
 	public String classe_1;
 
-	public Integer qtd_classe_1;
+	public Double qtd_classe_1;
 
 	public String classe_2;
 
-	public Integer qtd_classe_2;
+	public Double qtd_classe_2;
 
 	public String classe_3;
 
-	public Integer qtd_classe_3;
+	public Double qtd_classe_3;
 
 	public String classe_4;
 
-	public Integer qtd_classe_4;
+	public Double qtd_classe_4;
 
 	public String classe_5;
 
-	public Integer qtd_classe_5;
+	public Double qtd_classe_5;
 
 	public String classe_6;
 
-	public Integer qtd_classe_6;
+	public Double qtd_classe_6;
 
 	public Date updated_at;
+	
+	public Date reference_date;
 
 }

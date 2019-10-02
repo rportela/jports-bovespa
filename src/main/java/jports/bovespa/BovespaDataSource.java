@@ -64,6 +64,8 @@ public class BovespaDataSource {
 	public List<CapitalSocial> fetchCapitalSocial() throws IOException {
 
 		//URL remote = new URL("http://www.b3.com.br/data/files/35/32/54/96/D93EF5103EE99DF5790D8AA8/Capital%20Social.xlsx");
+
+		// !!!!! URL WILL PROBABLY BE DISCONTINUED ON 2019/11 !!!!!
 		URL remote = new URL("http://www.bmfbovespa.com.br/lumis/portal/file/fileDownload.jsp?fileId=8AA8D097531AC0FD0153761D3EB722E7");
 
 		try (InputStream is = locateInputStream(

@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -213,6 +214,9 @@ public class BovespaParser {
 			String segmentoMercado = "";
 
 			while (iterator.hasNext()) {
+				
+				final Calendar cal = Calendar.getInstance();
+			    cal.add(Calendar.DATE, -1);
 
 				Row currentRow = iterator.next();
 
@@ -241,23 +245,26 @@ public class BovespaParser {
 					cs.tipo_de_capital = cellList.get(4).getStringCellValue().trim();
 					cs.capital = cellList.get(5).getNumericCellValue();
 					cs.aprovado_em = parsers.dayMonthYear(cellList.get(6).getStringCellValue().trim());
-					cs.qtd_on = (int) cellList.get(7).getNumericCellValue();
-					cs.qtd_pn = (int) cellList.get(8).getNumericCellValue();
-					cs.qtd_total = (int) cellList.get(9).getNumericCellValue();
+					cs.qtd_on = cellList.get(7).getNumericCellValue();
+					cs.qtd_pn = cellList.get(8).getNumericCellValue();
+					cs.qtd_total = cellList.get(9).getNumericCellValue();
 					cs.classe_1 = cellList.get(10).getStringCellValue().trim();
-					cs.qtd_classe_1 = (int) cellList.get(11).getNumericCellValue();
+					cs.qtd_classe_1 = cellList.get(11).getNumericCellValue();
 					cs.classe_2 = cellList.get(12).getStringCellValue().trim();
-					cs.qtd_classe_2 = (int) cellList.get(13).getNumericCellValue();
+					cs.qtd_classe_2 = cellList.get(13).getNumericCellValue();
 					cs.classe_3 = cellList.get(14).getStringCellValue().trim();
-					cs.qtd_classe_3 = (int) cellList.get(15).getNumericCellValue();
+					cs.qtd_classe_3 = cellList.get(15).getNumericCellValue();
 					cs.classe_4 = cellList.get(16).getStringCellValue().trim();
-					cs.qtd_classe_4 = (int) cellList.get(17).getNumericCellValue();
+					cs.qtd_classe_4 = cellList.get(17).getNumericCellValue();
 					cs.classe_5 = cellList.get(18).getStringCellValue().trim();
-					cs.qtd_classe_5 = (int) cellList.get(19).getNumericCellValue();
+					cs.qtd_classe_5 = cellList.get(19).getNumericCellValue();
 					cs.classe_6 = cellList.get(20).getStringCellValue().trim();
-					cs.qtd_classe_6 = (int) cellList.get(21).getNumericCellValue();
+					cs.qtd_classe_6 = cellList.get(21).getNumericCellValue();
+					
 				}
 				cs.updated_at = new Date();
+				cs.reference_date = cal.getTime();
+
 
 				capSociais.add(cs);
 			}
