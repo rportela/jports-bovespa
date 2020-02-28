@@ -130,14 +130,16 @@ public class BovespaParser {
 			ParseException {
 
 		ArrayList<PosicoesEmAberto> target = new ArrayList<>(200);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("windows-1252")));
+		//BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("windows-1252")));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 		String line;
 		Date dataPregao = null;
 		Date dataArquivo = null;
 
 		while ((line = reader.readLine()) != null) {
 			String[] cells = line.split("\\|");
-			int lineType = Integer.parseInt(cells[0]);
+			String rowType = cells[0].replaceAll("[^a-zA-Z0-9]+","");
+			int lineType = Integer.parseInt(rowType);
 			switch (lineType) {
 			case 1:
 				dataPregao = new SimpleDateFormat("yyyyMMdd").parse(cells[1]);
